@@ -4,6 +4,7 @@ import com.Ashwani.blog.domain.PostStatus;
 import com.Ashwani.blog.domain.entities.Category;
 import com.Ashwani.blog.domain.entities.Post;
 import com.Ashwani.blog.domain.entities.Tag;
+import com.Ashwani.blog.domain.entities.User;
 import com.Ashwani.blog.repositories.PostRepository;
 import com.Ashwani.blog.services.CategoryService;
 import com.Ashwani.blog.services.PostService;
@@ -42,5 +43,10 @@ public class PostServiceImpl implements PostService {
             return postRepository.findAllByStatusAndTagsContaining(PostStatus.PUBLISHED, tag);
         }
         return postRepository.findAllByStatus(PostStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<Post> getDraftPosts(User user) {
+        return postRepository.findAllByAuthorAndStatus(user,PostStatus.DRAFT);
     }
 }

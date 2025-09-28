@@ -33,8 +33,8 @@ public class TagServiceImpl implements TagService {
                         Tag.builder().name(name).posts(new HashSet<>()).build())
                 .toList();
 
-        List<Tag> savedTags= new ArrayList<>();
-        if(!newTags.isEmpty()){
+        List<Tag> savedTags = new ArrayList<>();
+        if (!newTags.isEmpty()) {
             savedTags = tagRepository.saveAll(newTags);
         }
         savedTags.addAll(existingTags);
@@ -45,7 +45,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public void deleteTag(UUID id) {
         tagRepository.findById(id).ifPresent(tag -> {
-            if(!tag.getPosts().isEmpty()){
+            if (!tag.getPosts().isEmpty()) {
                 throw new IllegalStateException("Can not delete tag with posts");
             }
             tagRepository.deleteById(id);
@@ -55,6 +55,15 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getTagById(UUID id) {
         return tagRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Tag not found with Id"+id));
+                .orElseThrow(() -> new EntityNotFoundException("Tag not found with Id" + id));
+    }
+
+    @Override
+    public List<Tag> getTagByIds(Set<UUID> ids) {
+        List<Tag> foundTags = tagRepository.findAllById(ids);
+        if (foundTags.size() != ids.size()) {
+            throw new EntityNotFoundException("Not all specified tag IDs exist");
+        }
+        return foundTags;
     }
 }

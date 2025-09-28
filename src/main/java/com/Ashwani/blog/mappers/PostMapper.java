@@ -1,6 +1,10 @@
 package com.Ashwani.blog.mappers;
 
+import com.Ashwani.blog.domain.CreatePostRequest;
+import com.Ashwani.blog.domain.UpdatePostRequest;
+import com.Ashwani.blog.domain.dtos.CreatePostRequestDto;
 import com.Ashwani.blog.domain.dtos.PostDto;
+import com.Ashwani.blog.domain.dtos.UpdatePostRequestDto;
 import com.Ashwani.blog.domain.entities.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,6 +15,10 @@ public interface PostMapper {
 
     @Mapping(target = "author", source = "author")
     @Mapping(target = "category", source = "category")
-    @Mapping(target = "tags",source = "tags")
+    @Mapping(target = "tags", source = "tags")
     PostDto toDto(Post post);
+
+    CreatePostRequest toCreatePostRequest(CreatePostRequestDto dto);
+
+    UpdatePostRequest toUpdatePostRequest(UpdatePostRequestDto dto);
 }

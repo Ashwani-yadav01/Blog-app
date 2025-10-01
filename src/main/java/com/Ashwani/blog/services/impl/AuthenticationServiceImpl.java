@@ -1,5 +1,6 @@
 package com.Ashwani.blog.services.impl;
 
+import com.Ashwani.blog.domain.dtos.SignUpRequest;
 import com.Ashwani.blog.domain.entities.User;
 import com.Ashwani.blog.repositories.UserRepository;
 import com.Ashwani.blog.services.AuthenticationService;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -28,7 +30,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
-
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -59,6 +62,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String username = extractUsername(token);
         return userDetailsService.loadUserByUsername(username);
     }
+
+    @Override
+    public UserDetails signUp(SignUpRequest request) {
+        // 🔒 Check if email already exists
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email is already registered");
+        }
+
+        // 🔑 Create new user (password encoded)
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
+
+        // Save user in DB
+        User savedUser = userRepository.save(user);
+
+        // ✅ Load UserDetails for Spring Security
+        return userDetailsService.loadUserByUsername(savedUser.getEmail());
+    }
+
 
     private String extractUsername(String token) {
         Claims claims = Jwts.parserBuilder()

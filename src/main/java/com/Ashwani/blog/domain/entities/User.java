@@ -25,7 +25,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(nullable = false)
@@ -37,6 +37,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,12 +51,22 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, password, name, createdAt);
+        return Objects.hash(id, email, password, name, createdAt,updatedAt);
     }
+
+
+
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
 

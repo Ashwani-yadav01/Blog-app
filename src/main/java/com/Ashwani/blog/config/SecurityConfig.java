@@ -30,20 +30,9 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(UserRepository userRepository) {
-        BlogUserDetailsService blogUserDetailsService = new BlogUserDetailsService(userRepository);
-
-        String email = "user@test.com";
-        userRepository.findByEmail(email).orElseGet(() -> {
-            User newUser = User.builder()
-                    .name("Test User")
-                    .email(email)
-                    .password(passwordEncoder().encode("password"))
-                    .build();
-            return userRepository.save(newUser);
-        });
-
-        return blogUserDetailsService;
+        return new BlogUserDetailsService(userRepository);
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -51,7 +40,7 @@ public class SecurityConfig {
             JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/drafts").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()

@@ -34,6 +34,23 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
+    public Category updateCategory(Category category, UUID userId) {
+        Category existing = categoryRepository.findById(category.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id " + category.getId()));
+
+        // check for duplicate name
+        if (categoryRepository.existsByNameIgnoreCase(category.getName())
+                && !existing.getName().equalsIgnoreCase(category.getName())) {
+            throw new IllegalArgumentException("Category already exists with name: " + category.getName());
+        }
+
+        existing.setName(category.getName());
+        return categoryRepository.save(existing);
+    }
+
+
+    @Override
     public void deleteCategory(UUID id) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isPresent()) {

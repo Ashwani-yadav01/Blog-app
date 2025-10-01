@@ -13,6 +13,7 @@ import com.Ashwani.blog.services.PostService;
 import com.Ashwani.blog.services.TagService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,11 +81,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Post updatePost(UUID id, UpdatePostRequest updatePostRequest) {
-        Post existingPost = postRepository.findById(id)
+    public Post updatePost(UUID id, UpdatePostRequest updatePostRequest,User user) {
+        Post existingPost = postRepository.findAllByAuthor(user)
                 .orElseThrow(() -> new EntityNotFoundException("Post does not exist with id " + id));
 
-        //todo: this don't have authorization feature mean anyone can update any one post
+
         existingPost.setTitle(updatePostRequest.getTitle());
         String postContent = updatePostRequest.getContent();
         existingPost.setContent(postContent);
@@ -113,9 +114,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(UUID id) {
-        Post post = getPost(id);
+    public void deletePost(UUID id,User user) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found with id " + id));
+
+        if (!post.getAuthor().equals(user)) {
+            throw new AccessDeniedException("You cannot delete someone else's post " + id);
+        }
+
         postRepository.delete(post);
+
     }
 
     private Integer calculateReadingTime(String content) {

@@ -24,7 +24,7 @@ public class EmailUtil {
         mimeMessageHelper.setText("""
                 <div>
                 <p>Thanks for signup </p>
-                 Your  otp is otp=%s.
+                 Your  otp is %s.
                 </div>
                 """.formatted(otp), true);
 

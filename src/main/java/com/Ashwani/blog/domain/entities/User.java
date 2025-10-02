@@ -37,6 +37,11 @@ public class User {
     @Column(nullable = true)
     private LocalDateTime createdAt;
 
+    private boolean active;
+
+    private String otp;
+
+    private LocalDateTime otpGeneratedTime;
 
     @Column(nullable = true)
     private LocalDateTime updatedAt;
@@ -46,16 +51,13 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(name, user.name) && Objects.equals(createdAt, user.createdAt);
+        return active == user.active && Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(name, user.name) && Objects.equals(posts, user.posts) && Objects.equals(createdAt, user.createdAt) && Objects.equals(otp, user.otp) && Objects.equals(otpGeneratedTime, user.otpGeneratedTime) && Objects.equals(updatedAt, user.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, password, name, createdAt,updatedAt);
+        return Objects.hash(id, email, password, name, posts, createdAt, active, otp, otpGeneratedTime, updatedAt);
     }
-
-
-
 
     @PrePersist
     protected void onCreate() {

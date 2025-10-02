@@ -5,12 +5,10 @@ import com.Ashwani.blog.domain.dtos.LoginRequest;
 import com.Ashwani.blog.domain.dtos.SignUpRequest;
 import com.Ashwani.blog.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/v1/auth")
@@ -50,7 +48,25 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping("/verify-account")
+    ResponseEntity<String> verifyAccount(@RequestParam String email,@RequestParam String otp){
+    return new ResponseEntity<>(authenticationService.verifyAccount(email,otp), HttpStatus.OK);
+    }
 
+    @PostMapping("/regenerate-otp")
+    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
+        return new ResponseEntity<>(authenticationService.regenerateOtp(email), HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+        return new ResponseEntity<>(authenticationService.forgotPassword(email), HttpStatus.OK);
+    }
+
+    @PostMapping("/set-password")
+    public ResponseEntity<String> setPassword(@RequestParam String email,@RequestBody String newPassword) {
+        return new ResponseEntity<>(authenticationService.setPassword(email, newPassword), HttpStatus.OK);
+    }
 }
 
 

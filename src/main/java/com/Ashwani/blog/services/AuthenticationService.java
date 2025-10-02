@@ -13,4 +13,11 @@
 
         UserDetails signUp(SignUpRequest request);
 
+        String verifyAccount(String email,String otp);
+
+        String regenerateOtp(String email);
+
+        String forgotPassword(String email);
+
+        String setPassword(String email,String newPassword);
     }
